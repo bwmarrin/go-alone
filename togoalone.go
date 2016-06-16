@@ -3,32 +3,40 @@ package togoalone
 import (
 	"crypto/hmac"
 	"crypto/sha256"
-	"fmt"
 	"hash"
 )
 
-type signer struct {
-	h hash.Hash
+// Signer Struct for signing data with a secret.
+type Signer struct {
+	hash  hash.Hash
+	dirty bool
 }
 
-// New returns a new Signer
-func Signer(secret []byte) signer {
-	return signer{hmac.New(sha256.New, secret)}
+// New Return a new Signer.
+func New(secret []byte) Signer {
+	return Signer{
+		hash: hmac.New(sha256.New, secret),
+	}
 }
 
-// Sign signs data with secret and returns []byte
-func (s signer) Sign(data []byte) ([]byte, error) {
-
-	fmt.Printf("data : %d / %d\n", len(data), cap(data))
-
-	_, err := s.h.Write(data)
-	if err != nil {
-		return nil, err
+// Sign Signs data with secret and returns []byte.
+func (s Signer) Sign(data []byte) []byte {
+	// Reset if reused
+	if s.dirty {
+		s.hash.Reset()
 	}
 
+	// Write data to hasher and set dirty.
+	s.hash.Write(data)
+	s.dirty = true
+
+	// Make result into bytestring.
+	// The result will be `data.hash`.
 	t := make([]byte, 0, len(data)+33)
 	t = append(t, data...)
-	t = append(t, []byte(`.`)...)
-	t = append(t, s.h.Sum(nil)...)
-	return t, nil
+	t = append(t, '.')
+	t = s.hash.Sum(t)
+
+	// Return the result.
+	return t
 }
