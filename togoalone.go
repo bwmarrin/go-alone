@@ -1,9 +1,11 @@
 package togoalone
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"hash"
+	"reflect"
 )
 
 // Signer Struct for signing data with a secret.
@@ -20,7 +22,7 @@ func New(secret []byte) Signer {
 }
 
 // Sign Signs data with secret and returns []byte.
-func (s Signer) Sign(data []byte) []byte {
+func (s *Signer) Sign(data []byte) []byte {
 	// Reset if reused
 	if s.dirty {
 		s.hash.Reset()
@@ -39,4 +41,19 @@ func (s Signer) Sign(data []byte) []byte {
 
 	// Return the result.
 	return t
+}
+
+// Verify validates a token and returns a bool
+func (s Signer) Verify(token []byte) bool {
+
+	li := bytes.LastIndexByte(token, '.')
+	if li < 1 {
+		return false
+	}
+
+	if !reflect.DeepEqual(token, s.Sign(token[0:li])) {
+		return false
+	}
+
+	return true
 }
