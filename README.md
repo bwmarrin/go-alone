@@ -9,7 +9,7 @@ change.  I would be very interested in chatting with anyone with ideas on how
 to best structure this library.
 
 go-alone is a [Go](https://golang.org/) package that provides (or will) :
-* A very simple HMAC token signer, unsigner, and verifier package.
+* A very simple to use HMAC token signer, unsigner, and verifier package.
 * Compatibility with [itsdangerous](https://pythonhosted.org/itsdangerous/) tokens.
 
 **For help with this package or general Go discussion, please join the [Discord 
