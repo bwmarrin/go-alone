@@ -25,3 +25,13 @@ go get github.com/bwmarrin/go-alone
 ### Usage
 
 Baby steps :)
+
+
+
+### Performance / Testing
+
+To run the tests and benchmarks, use the following command.
+
+```sh
+go test -bench=. -v
+```
