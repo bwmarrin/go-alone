@@ -1,6 +1,4 @@
-It's Dangerous
-   ... so better sign this
-
+It's Dangerous to
 
 go-alone
 ====
