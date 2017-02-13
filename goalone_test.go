@@ -1,4 +1,4 @@
-package togoalone
+package goalone
 
 import (
 	"crypto/subtle"
