@@ -1,8 +1,6 @@
 <img align="right" src="http://vignette1.wikia.nocookie.net/zelda/images/2/28/Hyrule_Warriors_Hylian_Sword_8-Bit_Wooden_Sword_(8-bit_Hylian_Sword).png">
-It's Dangerous to
+It's Dangerous to **go-alone**! Take this.
 
-go-alone
-====
 [![GoDoc](https://godoc.org/github.com/bwmarrin/go-alone?status.svg)](https://godoc.org/github.com/bwmarrin/go-alone) [![Go report](http://goreportcard.com/badge/bwmarrin/go-alone)](http://goreportcard.com/report/bwmarrin/go-alone) [![Build Status](https://travis-ci.org/bwmarrin/go-alone.svg?branch=master)](https://travis-ci.org/bwmarrin/go-alone) [![Discord Gophers](https://img.shields.io/badge/Discord%20Gophers-%23info-blue.svg)](https://discord.gg/0f1SbxBZjYq9jLBk)
 
 **WARNING:** go-alone is in very early stages where I'm still hashing out how I
@@ -10,9 +8,9 @@ want to design the package.  You're free to use it but things will probably
 change.  I would be very interested in chatting with anyone with ideas on how
 to best structure this library.
 
-go-alone is a [Go](https://golang.org/) package that provides an [itsdangerous](https://pythonhosted.org/itsdangerous/)
-compatible HMAC authentication token signer and verifier package.  In other words,
-"Various helpers to pass trusted data to untrusted environments".
+go-alone is a [Go](https://golang.org/) package that provides (or will) :
+* A very simple HMAC token signer, unsigner, and verifier package.
+* Compatibility with [itsdangerous](https://pythonhosted.org/itsdangerous/) tokens.
 
 **For help with this package or general Go discussion, please join the [Discord 
 Gophers](https://discord.gg/0f1SbxBZjYq9jLBk) chat server.**
