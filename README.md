@@ -41,7 +41,7 @@ func main() {
 	var secret = []byte("It's a secret to everybody")
 
   // This data is what we will be signing below.
-	var data = []byte("It's Dangerous to go alone! Take this.")
+	var data = []byte("It's dangerous to go alone! Take this.")
 
 	// Create a new Signer using our secret
 	s := goalone.New(secret)
