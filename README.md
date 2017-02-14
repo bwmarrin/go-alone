@@ -52,7 +52,7 @@ func main() {
 	// You can reuse this struct as many times as you wish
 	token2 := s.Sign(data)
 
-	// You can easily Unsign a token, which will verify the signature is valiod
+	// You can easily Unsign a token, which will verify the signature is valid
 	// then return signed data of the token.
 	ok, data := s.Unsign(token)
 	if !ok {
