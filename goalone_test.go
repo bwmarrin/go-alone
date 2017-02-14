@@ -80,14 +80,14 @@ func TestUnsignTooLittle(t *testing.T) {
 	token, _ := hex.DecodeString(`3132`)
 
 	s := New(secret)
-	ok, got := s.Unsign(token)
+	got, err := s.Unsign(token)
 
 	if got != nil {
 		t.Error("Unsign returned data, but should have returned nil")
 	}
 
-	if ok {
-		t.Fatal("created token validated, but shouldn't have")
+	if err != ErrShortToken {
+		t.Fatal("Unsign did not return the correct error")
 	}
 
 }
@@ -99,9 +99,9 @@ func TestUnsign(t *testing.T) {
 	want := []byte(`1203981209381290.LutinRocks`)
 
 	s := New(secret)
-	ok, got := s.Unsign(token)
-	if !ok {
-		t.Fatal("created token did not validate")
+	got, err := s.Unsign(token)
+	if err != nil {
+		t.Fatal("Unsign returned an err,", err)
 	}
 	if subtle.ConstantTimeCompare(got, want) != 1 {
 		t.Logf("token: \n%x\n", token)
@@ -115,9 +115,9 @@ func TestUnsign(t *testing.T) {
 	}
 
 	token, _ = hex.DecodeString(`313230333938313230393338313239302e4c7574696e526f636b732ef728435d085e56b9345be75c0c09d6d3f0e094a8`)
-	ok, got = s.Unsign(token)
-	if ok {
-		t.Fatal("Invalid token was validated")
+	got, err = s.Unsign(token)
+	if err != ErrInvalidSignature {
+		t.Fatal("Unsign returned incorrect error")
 	}
 	if got != nil {
 		t.Logf("token: \n%x\n", token)

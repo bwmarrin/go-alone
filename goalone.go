@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"crypto/subtle"
+	"errors"
 	"hash"
 	"sync"
 )
@@ -18,6 +19,9 @@ type Sword struct {
 	hash  hash.Hash // Will need to expose a way to set this..
 	dirty bool      // Tracks if the hash is dirty
 }
+
+var ErrInvalidSignature = errors.New("invalid signature")
+var ErrShortToken = errors.New("token is too small to be valid")
 
 // New takes a key and returns a new Sword struct using default values.
 //
@@ -60,15 +64,15 @@ func (s *Sword) Sign(data []byte) []byte {
 	return t
 }
 
-// Unsign validates a signature and if successful returns the data
-// portion of the []byte
-func (s *Sword) Unsign(token []byte) (bool, []byte) {
+// Unsign validates a signature and if successful returns the data portion of
+// the []byte. If unsuccessful it will return an error and nil for the data.
+func (s *Sword) Unsign(token []byte) ([]byte, error) {
 
 	tl := len(token)
 
 	// A token must be at least hash.Size+2 bytes long to be valid.
 	if tl < s.hash.Size()+2 {
-		return false, nil
+		return nil, ErrShortToken
 	}
 
 	s.Lock()
@@ -87,8 +91,8 @@ func (s *Sword) Unsign(token []byte) (bool, []byte) {
 	s.Unlock()
 
 	if subtle.ConstantTimeCompare(token[tl-s.hash.Size():], h) != 1 {
-		return false, nil
+		return nil, ErrInvalidSignature
 	}
 
-	return true, token[0 : tl-(s.hash.Size()+1)]
+	return token[0 : tl-(s.hash.Size()+1)], nil
 }
