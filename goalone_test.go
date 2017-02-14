@@ -135,8 +135,7 @@ func BenchmarkSignLittle(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		s := New(secret)
-		s.Sign(data)
+		New(secret).Sign(data)
 	}
 }
 
@@ -160,8 +159,7 @@ func BenchmarkSignBig(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		s := New(secret)
-		s.Sign(data)
+		New(secret).Sign(data)
 	}
 }
 
@@ -188,8 +186,7 @@ func BenchmarkUnsignLittle(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		s := New(secret)
-		s.Unsign(t)
+		New(secret).Unsign(t)
 	}
 }
 
@@ -216,8 +213,7 @@ func BenchmarkUnsignBig(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		s := New(secret)
-		s.Unsign(t)
+		New(secret).Unsign(t)
 	}
 }
 
