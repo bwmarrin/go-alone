@@ -28,7 +28,61 @@ go get github.com/bwmarrin/go-alone
 
 ### Usage
 
-Baby steps :)
+See the below example program.
+
+```go
+package main
+
+import "github.com/bwmarrin/go-alone"
+
+func main() {
+
+	var secret = []byte("It's Dangerous to go alone! Take this.")
+	var data = []byte("The right thing... what is it? I wonder, if you do the right thing, does it really make everyone happy?")
+
+	//
+
+	// Create a new Signer using our secret
+	s := goalone.New(secret)
+
+	// Sign and return a token in the form of `data.signature`
+	token := s.Sign(data)
+
+	// You can reuse this struct as many times as you wish
+	token2 := s.Sign(data)
+
+	// You can easily Unsign a token, which will verify the signature is valiod
+	// then return signed data of the token.
+	ok, data := s.Unsign(token)
+	if !ok {
+		// signature is not valid
+	} else {
+		// signature is valid, it is safe to use the data
+		println(string(data))
+	}
+
+	// Of course, you can do this as many times as needed as well.
+	ok2, data2 := s.Unsign(token2)
+	if !ok2 {
+		// signature is not valid
+	} else {
+		// signature is valid, it is safe to use the data
+		println(string(data2))
+	}
+
+	// You can also write one-liners when you will not be reusing the hash.
+	token3 := goalone.New(secret).Sign(data)
+
+	// Of course, you can Unsign with a one-liner too.
+	ok3, data3 := goalone.New(secret).Unsign(token3)
+	if !ok3 {
+		// signature is not valid
+	} else {
+		// signature is valid, it is safe to use the data
+		println(string(data3))
+	}
+}
+```
 
 
 
