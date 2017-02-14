@@ -5,7 +5,7 @@ It's dangerous to **go-alone**! Take this.
 
 go-alone is a [Go](https://golang.org/) package that provides (or will) :
 * A very simple to use HMAC signer and unsigner (WORKS)
-* Compatibility with [itsdangerous](https://pythonhosted.org/itsdangerous/) tokens. (TODO)
+* Full compatibility with [itsdangerous](https://pythonhosted.org/itsdangerous/) tokens. (TODO)
 
 **For help with this package or general Go discussion, please join the [Discord 
 Gophers](https://discord.gg/0f1SbxBZjYq9jLBk) chat server.**
