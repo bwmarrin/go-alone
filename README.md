@@ -37,10 +37,11 @@ import "github.com/bwmarrin/go-alone"
 
 func main() {
 
+  // This secret is used as the hash key for the signer.
 	var secret = []byte("It's Dangerous to go alone! Take this.")
-	var data = []byte("The right thing... what is it? I wonder, if you do the right thing, does it really make everyone happy?")
 
-	//
+  // This data is what we will be signing below.
+	var data = []byte("The right thing... what is it? I wonder, if you do the right thing, does it really make everyone happy?")
 
 	// Create a new Signer using our secret
 	s := goalone.New(secret)
