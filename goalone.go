@@ -1,37 +1,42 @@
 package goalone
 
 import (
-	"bytes"
 	"crypto/hmac"
 	"crypto/sha1"
 	"crypto/subtle"
-	"encoding/base64"
-	"encoding/binary"
 	"hash"
+	"sync"
 )
 
-const (
-	DefaultEpoch = 1293840000 // itsdangerous Epoch
-)
-
-// Signer Struct for signing data with a secret.
-type Signer struct {
-	hash  hash.Hash
-	dirty bool
-	epoch int
+// Sword is a Wooden Sword to be used for protection, because it's dangerous out
+// there... Also, it is the main struct used to sign, verify, and unsign
+// data using this package. You may create it manually and customize thei
+// settings or use the New() function to use defaults.
+type Sword struct {
+	sync.Mutex
+	hash  hash.Hash // Will need to expose a way to set this..
+	dirty bool      // Tracks if the hash is dirty
 }
 
-// New Return a new Signer.
-func New(secret []byte) Signer {
-	return Signer{
-		hash:  hmac.New(sha1.New, secret),
-		epoch: DefaultEpoch,
+// New takes a key and returns a new Sword struct using default values.
+// You can customize many options by manually creating the Sword struct or
+// altering the struct returned by this function. If you pass nil as the key
+// then this function will return an empty Sword struct.
+func New(key []byte) *Sword {
+
+	if key == nil {
+		return &Sword{}
+	}
+
+	return &Sword{
+		hash: hmac.New(sha1.New, key),
 	}
 }
 
-// Sign Signs data with secret and returns []byte.
-func (s *Signer) Sign(data []byte) []byte {
-	s.hash.Size()
+// Sign signs data with key and returns []byte.
+func (s *Sword) Sign(data []byte) []byte {
+
+	s.Lock()
 
 	// Reset if reused
 	if s.dirty {
@@ -48,21 +53,24 @@ func (s *Signer) Sign(data []byte) []byte {
 	t = append(t, data...)
 	t = append(t, '.')
 	t = s.hash.Sum(t)
+	s.Unlock()
 
 	// Return the result.
 	return t
 }
 
-// Verify validates a token and returns a bool
-func (s *Signer) Validate(token []byte) bool {
+// Unsign validates a hmac signature and if successful returns the data
+// portion of the []byte
+func (s *Sword) Unsign(token []byte) (bool, []byte) {
 
 	tl := len(token)
 
-	// A token must be at least .. bytes long to be valid.
+	// A token must be at least hash.Size+2 bytes long to be valid.
 	if tl < s.hash.Size()+2 {
-		return false
+		return false, nil
 	}
 
+	s.Lock()
 	// Reset if reused
 	if s.dirty {
 		s.hash.Reset()
@@ -76,29 +84,11 @@ func (s *Signer) Validate(token []byte) bool {
 	// The result will be `data.hash`.
 	h := make([]byte, 0, s.hash.Size())
 	h = s.hash.Sum(h)
+	s.Unlock()
 
-	return (subtle.ConstantTimeCompare(token[tl-s.hash.Size():], h) == 1)
-}
+	if subtle.ConstantTimeCompare(token[tl-s.hash.Size():], h) != 1 {
+		return false, nil
+	}
 
-func EncodeUint64(i uint64) []byte {
-
-	// covert int into bytes
-	buf := make([]byte, 8)
-	binary.BigEndian.PutUint64(buf, i)
-
-	// encode bytes to base64, striping off leading 0's
-	buf2 := make([]byte, 11)
-	base64.RawURLEncoding.Encode(buf2, bytes.TrimLeft(buf, "\x00"))
-
-	// return result, removing training `\x00`
-	return bytes.TrimRight(buf2, "\x00")
-}
-
-func DecodeUint64(b []byte) uint64 {
-
-	l := len(b) * 6 / 8 // cause DecodedLen has a bug // https://github.com/golang/go/commit/87151c82b68023e4224b016a6a66ead2c4b8ece7
-	buf := make([]byte, 8)
-
-	base64.RawURLEncoding.Decode(buf[8-l:], b)
-	return binary.BigEndian.Uint64(buf)
+	return true, token[0 : tl-(s.hash.Size()+1)]
 }
