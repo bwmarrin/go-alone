@@ -20,7 +20,12 @@ type Sword struct {
 	dirty bool      // Tracks if the hash is dirty
 }
 
+// ErrInvalidSignature is returned by Unsign when the provided token's
+// signatuire is not valid.
 var ErrInvalidSignature = errors.New("invalid signature")
+
+// ErrShortToken is returned by Unsign when the provided token's length
+// is too short to be a vlaid token.
 var ErrShortToken = errors.New("token is too small to be valid")
 
 // New takes a key and returns a new Sword struct using default values.
