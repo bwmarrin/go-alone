@@ -236,3 +236,55 @@ func BenchmarkUnsignReuseBig(b *testing.B) {
 		s.Unsign(t)
 	}
 }
+
+func TestEncodeUint64(t *testing.T) {
+	b1 := []byte{102, 95, 95, 95, 95, 95, 95, 95, 95, 95, 56}
+	b2 := []byte{95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 56}
+	var i1 uint64 = 9223372036854775807
+	var i2 uint64 = 0xFFFFFFFFFFFFFFFF
+
+	if subtle.ConstantTimeCompare(b1, encodeUint64(i1)) != 1 {
+		t.Fatal("encodeUint64 returned bad value for i1")
+	}
+
+	if subtle.ConstantTimeCompare(b2, encodeUint64(i2)) != 1 {
+		t.Fatal("encodeUint64 returned bad value for i2")
+	}
+}
+
+func TestDecodeUint64(t *testing.T) {
+	var i uint64 = 0x00000000FFFFFFFF
+	b := encodeUint64(i)
+	if decodeUint64(b) != i {
+		t.Fatal("decodeUint64 returned bad value for b1")
+	}
+
+	var i2 uint64 = 0xFFFFFFFFFFFFFFFF
+	b2 := encodeUint64(i2)
+	if decodeUint64(b2) != i2 {
+		t.Fatal("decodeUint64 returned bad value for b2")
+	}
+}
+
+func BenchmarkEncodeUint64(b *testing.B) {
+
+	var ui uint64 = 0xFFFFFFFFFFFFFFFF
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		encodeUint64(ui)
+	}
+}
+
+func BenchmarkDecodeUint64(b *testing.B) {
+
+	var i uint64 = 0x00000000FFFFFFFF
+	ei := encodeUint64(i)
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		decodeUint64(ei)
+	}
+}
