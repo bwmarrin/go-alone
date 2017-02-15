@@ -1,13 +1,16 @@
 package goalone
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha1"
 	"crypto/subtle"
 	"encoding/base64"
+	"encoding/binary"
 	"errors"
 	"hash"
 	"sync"
+	"time"
 )
 
 // Sword is a Wooden Sword to be used for protection, because it's dangerous out
@@ -19,6 +22,9 @@ type Sword struct {
 	sync.Mutex
 	hash  hash.Hash // Will need to expose a way to set this..
 	dirty bool      // Tracks if the hash is dirty
+
+	Epoch     int64
+	Timestamp bool // Prefix/Parse a timestamp on Tokens
 }
 
 // ErrInvalidSignature is returned by Unsign when the provided token's
@@ -41,39 +47,47 @@ func New(key []byte) *Sword {
 	}
 
 	return &Sword{
-		hash: hmac.New(sha1.New, key),
+		Epoch: ItsDangerousEpoch,
+		hash:  hmac.New(sha1.New, key),
 	}
 }
 
 // Sign signs data and returns []byte in the format `data.signature`.
 func (s *Sword) Sign(data []byte) []byte {
 
+	// Build the payload
 	el := base64.RawURLEncoding.EncodedLen(s.hash.Size())
+	var t []byte
 
+	if s.Timestamp {
+		now := time.Now().UTC().Unix() - s.Epoch
+		ts := encodeUint64(uint64(now))
+		t = make([]byte, 0, len(data)+len(ts)+el+2)
+		t = append(t, data...)
+		t = append(t, '.')
+		t = append(t, ts...)
+	} else {
+		t = make([]byte, 0, len(data)+el+1)
+		t = append(t, data...)
+	}
+
+	// Now lets lock the hash and create the signature
 	s.Lock()
-
-	// Reset if reused
 	if s.dirty {
 		s.hash.Reset()
 	}
-
-	// Write data to hasher and set dirty.
-	s.hash.Write(data)
 	s.dirty = true
-
-	// The result will be `data.hash`.
-	t := make([]byte, 0, len(data)+el+1)
-	t = append(t, data...)
-	t = append(t, '.')
-
+	s.hash.Write(t)
 	h := s.hash.Sum(nil)
-	dst := make([]byte, el)
-	base64.RawURLEncoding.Encode(dst, h)
-
-	t = append(t, dst...)
 	s.Unlock()
 
-	// Return the result.
+	// Append signature to token
+	t = append(t, '.')
+	tl := len(t)
+	t = t[0 : tl+el]
+	base64.RawURLEncoding.Encode(t[tl:], h)
+
+	// Return the token to the caller
 	return t
 }
 
@@ -89,25 +103,46 @@ func (s *Sword) Unsign(token []byte) ([]byte, error) {
 		return nil, ErrShortToken
 	}
 
+	// Now lets lock the hash and create the signature
 	s.Lock()
-
-	// Reset if reused
 	if s.dirty {
 		s.hash.Reset()
 	}
-
-	// Write data to hasher and set dirty.
-	s.hash.Write(token[0 : tl-(el+1)])
 	s.dirty = true
-
+	s.hash.Write(token[0 : tl-(el+1)])
 	h := s.hash.Sum(nil)
+	s.Unlock()
+
+	// Encode hash into dst
 	dst := make([]byte, el)
 	base64.RawURLEncoding.Encode(dst, h)
-	s.Unlock()
 
 	if subtle.ConstantTimeCompare(token[tl-el:], dst) != 1 {
 		return nil, ErrInvalidSignature
 	}
 
 	return token[0 : tl-(el+1)], nil
+}
+
+func encodeUint64(i uint64) []byte {
+
+	// covert int into bytes
+	buf := make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, i)
+
+	// encode bytes to base64, striping off leading 0's
+	buf2 := make([]byte, 11)
+	base64.RawURLEncoding.Encode(buf2, bytes.TrimLeft(buf, "\x00"))
+
+	// return result, removing training `\x00`
+	return bytes.TrimRight(buf2, "\x00")
+}
+
+func decodeUint64(b []byte) uint64 {
+
+	l := len(b) * 6 / 8 // cause DecodedLen has a bug // https://github.com/golang/go/commit/87151c82b68023e4224b016a6a66ead2c4b8ece7
+	buf := make([]byte, 8)
+
+	base64.RawURLEncoding.Decode(buf[8-l:], b)
+	return binary.BigEndian.Uint64(buf)
 }

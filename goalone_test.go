@@ -171,7 +171,6 @@ func BenchmarkSignBigReuse(b *testing.B) {
 		s.Sign(data)
 	}
 }
-
 func BenchmarkUnsignLittle(b *testing.B) {
 	secret := []byte(`B1nzyRateLimits`)
 	data := []byte(`1203981209381290.LutinRocks`)
