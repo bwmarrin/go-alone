@@ -11,7 +11,7 @@ func main() {
 	var data = []byte("It's dangerous to go alone! Take this.")
 
 	// Create a new Signer using our secret
-	s := goalone.New(secret)
+	s := goalone.New(secret, nil)
 
 	// Sign and return a token in the form of `data.signature`
 	token := s.Sign(data)
@@ -39,10 +39,10 @@ func main() {
 	}
 
 	// You can also write one-liners when you will not be reusing the hash.
-	token3 := goalone.New(secret).Sign(data)
+	token3 := goalone.New(secret, nil).Sign(data)
 
 	// Of course, you can Unsign with a one-liner too.
-	data3, err3 := goalone.New(secret).Unsign(token3)
+	data3, err3 := goalone.New(secret, nil).Unsign(token3)
 	if err3 != nil {
 		// signature is not valid
 	} else {

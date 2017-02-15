@@ -20,7 +20,7 @@ func TestItsDangerousSigner(t *testing.T) {
 	salt := sha1.Sum(saltkey)
 	key := salt[:]
 
-	got := New(key).Sign(data)
+	got := New(key, nil).Sign(data)
 
 	if subtle.ConstantTimeCompare(got, want) != 1 {
 		t.Logf("data: \n%s\n", data)
@@ -41,7 +41,7 @@ func TestItsDangerousSerializer(t *testing.T) {
 	salt := sha1.Sum(saltkey)
 	key := salt[:]
 
-	got := New(key).Sign(data)
+	got := New(key, nil).Sign(data)
 
 	if subtle.ConstantTimeCompare(got, want) != 1 {
 		t.Logf("data: \n%s\n", data)
@@ -61,7 +61,7 @@ func TestItsDangerousURLSafeSerializer(t *testing.T) {
 	salt := sha1.Sum(saltkey)
 	key := salt[:]
 
-	got := New(key).Sign(data)
+	got := New(key, nil).Sign(data)
 
 	if subtle.ConstantTimeCompare(got, want) != 1 {
 		t.Logf("data: \n%s\n", data)

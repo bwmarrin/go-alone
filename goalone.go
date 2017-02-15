@@ -13,18 +13,27 @@ import (
 	"time"
 )
 
+// Options that can be configured and passed to New()
+type Options struct {
+	// hash algorithm to use when signing tokens, ex. sha1.New
+	Algorithm func() hash.Hash
+
+	// Epoch to use for Timestamps, when signing/parsing Tokens
+	Epoch int64
+
+	// Should the Sign method add a timestamp to tokens?
+	Timestamp bool
+}
+
 // Sword is a Wooden Sword to be used for protection, because it's dangerous out
 // there... Also, it is the main struct used to sign and unsign data using this
 // package.
-//
-// TODO: You may create it manually or use the New() function.
 type Sword struct {
 	sync.Mutex
-	hash  hash.Hash // Will need to expose a way to set this..
-	dirty bool      // Tracks if the hash is dirty
+	hash  hash.Hash
+	dirty bool
 
-	Epoch     int64
-	Timestamp bool // Prefix/Parse a timestamp on Tokens
+	Options
 }
 
 // ErrInvalidSignature is returned by Unsign when the provided token's
@@ -35,21 +44,26 @@ var ErrInvalidSignature = errors.New("invalid signature")
 // is too short to be a vlaid token.
 var ErrShortToken = errors.New("token is too small to be valid")
 
-// New takes a key and returns a new Sword struct using default values.
-//
-// TODO: You can customize many options by manually creating the Sword struct or
-// altering the struct returned by this function. If you pass nil as the key
-// then this function will return an empty Sword struct.
-func New(key []byte) *Sword {
+// New takes a secret key and returns a new Sword.  If no Options are provided
+// then minimal defaults will be used.
+func New(key []byte, o *Options) *Sword {
 
 	if key == nil {
 		return &Sword{}
 	}
 
-	return &Sword{
-		Epoch: ItsDangerousEpoch,
-		hash:  hmac.New(sha1.New, key),
+	if o == nil {
+		return &Sword{hash: hmac.New(sha1.New, key)}
 	}
+
+	s := &Sword{Options: *o}
+	if s.Algorithm == nil {
+		s.hash = hmac.New(sha1.New, key)
+	} else {
+		s.hash = hmac.New(s.Algorithm, key)
+	}
+
+	return s
 }
 
 // Sign signs data and returns []byte in the format `data.signature`.
