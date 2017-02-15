@@ -25,7 +25,7 @@ type Options struct {
 	Timestamp bool
 }
 
-// Sword is a Wooden Sword to be used for protection, because it's dangerous out
+// Sword is a magical Wooden Sword to be used for protection, because it's dangerous out
 // there... Also, it is the main struct used to sign and unsign data using this
 // package.
 type Sword struct {
@@ -66,7 +66,8 @@ func New(key []byte, o *Options) *Sword {
 	return s
 }
 
-// Sign signs data and returns []byte in the format `data.signature`.
+// Sign signs data and returns []byte in the format `data.signature`. Optionally
+// add a timestamp and return in the format `data.timestamp.signature`
 func (s *Sword) Sign(data []byte) []byte {
 
 	// Build the payload
