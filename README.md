@@ -4,9 +4,8 @@ It's dangerous to **go-alone**! Take this.
 [![GoDoc](https://godoc.org/github.com/bwmarrin/go-alone?status.svg)](https://godoc.org/github.com/bwmarrin/go-alone) [![Go report](http://goreportcard.com/badge/bwmarrin/go-alone)](http://goreportcard.com/report/bwmarrin/go-alone) [![Build Status](https://travis-ci.org/bwmarrin/go-alone.svg?branch=master)](https://travis-ci.org/bwmarrin/go-alone) [![Coverage](http://gocover.io/_badge/github.com/bwmarrin/go-alone)](https://gocover.io/github.com/bwmarrin/go-alone) [![Discord Gophers](https://img.shields.io/badge/Discord%20Gophers-%23info-blue.svg)](https://discord.gg/0f1SbxBZjYq9jLBk)
 
 go-alone is a [Go](https://golang.org/) package that provides (or will) :
-* A very simple to use and high performance HMAC signer and unsigner (WORKS)
-* Compatibility with [itsdangerous](https://pythonhosted.org/itsdangerous/) tokens. (TODO)
-* Compatibility with JWT tokens. (TODO)
+* A very simple to use and high performance HMAC signer and unsigner
+* Reasonable compatibility with [itsdangerous](https://pythonhosted.org/itsdangerous/) tokens. (TODO)
 
 **For help with this package or general Go discussion, please join the [Discord 
 Gophers](https://discord.gg/0f1SbxBZjYq9jLBk) chat server.**
