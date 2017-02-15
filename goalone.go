@@ -86,21 +86,13 @@ func (s *Sword) Sign(data []byte) []byte {
 		t = append(t, data...)
 	}
 
-	// Now lets lock the hash and create the signature
-	s.Lock()
-	if s.dirty {
-		s.hash.Reset()
-	}
-	s.dirty = true
-	s.hash.Write(t)
-	h := s.hash.Sum(nil)
-	s.Unlock()
-
-	// Append signature to token
+	// Append and encode signature to token
 	t = append(t, '.')
 	tl := len(t)
 	t = t[0 : tl+el]
-	base64.RawURLEncoding.Encode(t[tl:], h)
+
+	// Add the signature to the token
+	s.sign(t[tl:], t[0:tl-1])
 
 	// Return the token to the caller
 	return t
@@ -118,25 +110,30 @@ func (s *Sword) Unsign(token []byte) ([]byte, error) {
 		return nil, ErrShortToken
 	}
 
-	// Now lets lock the hash and create the signature
-	s.Lock()
-	if s.dirty {
-		s.hash.Reset()
-	}
-	s.dirty = true
-	s.hash.Write(token[0 : tl-(el+1)])
-	h := s.hash.Sum(nil)
-	s.Unlock()
-
-	// Encode hash into dst
+	// Get the signature of the payload
 	dst := make([]byte, el)
-	base64.RawURLEncoding.Encode(dst, h)
+	s.sign(dst, token[0:tl-(el+1)])
 
 	if subtle.ConstantTimeCompare(token[tl-el:], dst) != 1 {
 		return nil, ErrInvalidSignature
 	}
 
 	return token[0 : tl-(el+1)], nil
+}
+
+// sign creates the encoded signature of payload and writes to dst
+func (s *Sword) sign(dst, payload []byte) {
+
+	s.Lock()
+	if s.dirty {
+		s.hash.Reset()
+	}
+	s.dirty = true
+	s.hash.Write(payload)
+	h := s.hash.Sum(nil)
+	s.Unlock()
+
+	base64.RawURLEncoding.Encode(dst, h)
 }
 
 func encodeUint64(i uint64) []byte {
