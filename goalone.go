@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"crypto/subtle"
+	"encoding/base64"
 	"errors"
 	"hash"
 	"sync"
@@ -47,6 +48,8 @@ func New(key []byte) *Sword {
 // Sign signs data and returns []byte in the format `data.signature`.
 func (s *Sword) Sign(data []byte) []byte {
 
+	el := base64.RawURLEncoding.EncodedLen(s.hash.Size())
+
 	s.Lock()
 
 	// Reset if reused
@@ -59,10 +62,15 @@ func (s *Sword) Sign(data []byte) []byte {
 	s.dirty = true
 
 	// The result will be `data.hash`.
-	t := make([]byte, 0, len(data)+s.hash.Size()+1)
+	t := make([]byte, 0, len(data)+el+1)
 	t = append(t, data...)
 	t = append(t, '.')
-	t = s.hash.Sum(t)
+
+	h := s.hash.Sum(nil)
+	dst := make([]byte, el)
+	base64.RawURLEncoding.Encode(dst, h)
+
+	t = append(t, dst...)
 	s.Unlock()
 
 	// Return the result.
@@ -74,9 +82,10 @@ func (s *Sword) Sign(data []byte) []byte {
 func (s *Sword) Unsign(token []byte) ([]byte, error) {
 
 	tl := len(token)
+	el := base64.RawURLEncoding.EncodedLen(s.hash.Size())
 
-	// A token must be at least hash.Size+2 bytes long to be valid.
-	if tl < s.hash.Size()+2 {
+	// A token must be at least el+2 bytes long to be valid.
+	if tl < el+2 {
 		return nil, ErrShortToken
 	}
 
@@ -88,16 +97,17 @@ func (s *Sword) Unsign(token []byte) ([]byte, error) {
 	}
 
 	// Write data to hasher and set dirty.
-	s.hash.Write(token[0 : tl-(s.hash.Size()+1)])
+	s.hash.Write(token[0 : tl-(el+1)])
 	s.dirty = true
 
-	h := make([]byte, 0, s.hash.Size())
-	h = s.hash.Sum(h)
+	h := s.hash.Sum(nil)
+	dst := make([]byte, el)
+	base64.RawURLEncoding.Encode(dst, h)
 	s.Unlock()
 
-	if subtle.ConstantTimeCompare(token[tl-s.hash.Size():], h) != 1 {
+	if subtle.ConstantTimeCompare(token[tl-el:], dst) != 1 {
 		return nil, ErrInvalidSignature
 	}
 
-	return token[0 : tl-(s.hash.Size()+1)], nil
+	return token[0 : tl-(el+1)], nil
 }

@@ -2,7 +2,6 @@ package goalone
 
 import (
 	"crypto/subtle"
-	"encoding/hex"
 	"testing"
 )
 
@@ -43,17 +42,15 @@ func TestSign(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLimits`)
 	data := []byte(`1203981209381290.LutinRocks`)
-	want := []byte("1203981209381290.LutinRocks.")
-	bs, _ := hex.DecodeString(`f728435d085e56b9345be75c0c09d6d3f0e094a9`)
-	want = append(want, bs...)
+	want := []byte("1203981209381290.LutinRocks.9yhDXQheVrk0W-dcDAnW0_DglKk")
 
 	s := New(secret)
 	token := s.Sign(data)
 
 	if subtle.ConstantTimeCompare(token, want) != 1 {
-		t.Logf("data: \n%x\n", data)
-		t.Logf("want: \n%x\n", want)
-		t.Logf("got : \n%x\n", token)
+		t.Logf("data: \n%s\n", data)
+		t.Logf("want: \n%s\n", want)
+		t.Logf("got : \n%s\n", token)
 		t.Fatal("token and want do not match")
 	}
 
@@ -66,9 +63,9 @@ func TestSign(t *testing.T) {
 	token = s.Sign(data)
 
 	if subtle.ConstantTimeCompare(token, want) != 1 {
-		t.Logf("data: \n%x\n", data)
-		t.Logf("want: \n%x\n", want)
-		t.Logf("got : \n%x\n", token)
+		t.Logf("data: \n%s\n", data)
+		t.Logf("want: \n%s\n", want)
+		t.Logf("got : \n%s\n", token)
 		t.Fatal("token and want do not match")
 	}
 
@@ -77,7 +74,7 @@ func TestSign(t *testing.T) {
 func TestUnsignTooLittle(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLimits`)
-	token, _ := hex.DecodeString(`3132`)
+	token := []byte("9yhDXQheVrk0W-dcDAnW0_DglKk")
 
 	s := New(secret)
 	got, err := s.Unsign(token)
@@ -95,7 +92,7 @@ func TestUnsignTooLittle(t *testing.T) {
 func TestUnsign(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLimits`)
-	token, _ := hex.DecodeString(`313230333938313230393338313239302e4c7574696e526f636b732ef728435d085e56b9345be75c0c09d6d3f0e094a9`)
+	token := []byte("1203981209381290.LutinRocks.9yhDXQheVrk0W-dcDAnW0_DglKk")
 	want := []byte(`1203981209381290.LutinRocks`)
 
 	s := New(secret)
@@ -104,9 +101,9 @@ func TestUnsign(t *testing.T) {
 		t.Fatal("Unsign returned an err,", err)
 	}
 	if subtle.ConstantTimeCompare(got, want) != 1 {
-		t.Logf("token: \n%x\n", token)
-		t.Logf("want: \n%x\n", want)
-		t.Logf("got : \n%x\n", got)
+		t.Logf("token: \n%s\n", token)
+		t.Logf("want: \n%s\n", want)
+		t.Logf("got : \n%s\n", got)
 		t.Fatal("data of token does not match original data")
 	}
 
@@ -114,15 +111,15 @@ func TestUnsign(t *testing.T) {
 		t.Fatal("Hash is not dirty, but it should be")
 	}
 
-	token, _ = hex.DecodeString(`313230333938313230393338313239302e4c7574696e526f636b732ef728435d085e56b9345be75c0c09d6d3f0e094a8`)
+	token = []byte("1203981209381290.LutinRocks.9yhDXQheVrkkW-dcDAnW0_DglKk")
 	got, err = s.Unsign(token)
 	if err != ErrInvalidSignature {
 		t.Fatal("Unsign returned incorrect error")
 	}
 	if got != nil {
-		t.Logf("token: \n%x\n", token)
-		t.Logf("want: nil\n")
-		t.Logf("got : \n%x\n", got)
+		t.Logf("token: \n%s\n", token)
+		t.Logf("want: \n%s\n", want)
+		t.Logf("got : \n%s\n", got)
 		t.Fatal("got should be nil")
 	}
 }
