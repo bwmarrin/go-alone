@@ -1,9 +1,26 @@
 package goalone
 
 import (
+	"crypto/sha1"
 	"crypto/subtle"
 	"testing"
 )
+
+func TestNewNil(t *testing.T) {
+
+	s := New(nil, nil)
+	if s == nil {
+		t.Fatal("New returned a nil")
+	}
+
+	if s.hash != nil {
+		t.Fatal("New returned a Sword without nil hash")
+	}
+
+	if s.dirty {
+		t.Fatal("New returned a dirty hash")
+	}
+}
 
 func TestNewSecret(t *testing.T) {
 
@@ -22,20 +39,60 @@ func TestNewSecret(t *testing.T) {
 	}
 }
 
-func TestNewNil(t *testing.T) {
+func TestNewSecretOptions(t *testing.T) {
 
-	s := New(nil, nil)
+	secret := []byte(`B1nzyRateLimits`)
+	s := New(secret, &Options{})
 	if s == nil {
 		t.Fatal("New returned a nil")
 	}
 
-	if s.hash != nil {
-		t.Fatal("New returned a Sword without nil hash")
+	if s.hash == nil {
+		t.Fatal("New returned a Sword with a nil hash")
 	}
 
 	if s.dirty {
 		t.Fatal("New returned a dirty hash")
 	}
+}
+
+func TestNewSecretOptionsAlgorithm(t *testing.T) {
+
+	secret := []byte(`B1nzyRateLimits`)
+	s := New(secret, &Options{Algorithm: sha1.New})
+	if s == nil {
+		t.Fatal("New returned a nil")
+	}
+
+	if s.Algorithm == nil {
+		t.Fatal("New returned a Sword with a nil Algorithm")
+	}
+
+	if s.hash == nil {
+		t.Fatal("New returned a Sword with a nil hash")
+	}
+
+	if s.dirty {
+		t.Fatal("New returned a dirty hash")
+	}
+}
+
+func TestUnsignTooLittle(t *testing.T) {
+
+	secret := []byte(`B1nzyRateLimits`)
+	token := []byte("9yhDXQheVrk0W-dcDAnW0_DglKk")
+
+	s := New(secret, nil)
+	got, err := s.Unsign(token)
+
+	if got != nil {
+		t.Error("Unsign returned data, but should have returned nil")
+	}
+
+	if err != ErrShortToken {
+		t.Fatal("Unsign did not return the correct error")
+	}
+
 }
 
 func TestSign(t *testing.T) {
@@ -71,20 +128,24 @@ func TestSign(t *testing.T) {
 
 }
 
-func TestUnsignTooLittle(t *testing.T) {
+func TestSignTimestamp(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLimits`)
-	token := []byte("9yhDXQheVrk0W-dcDAnW0_DglKk")
+	data := []byte(`1203981209381290.LutinRocks`)
 
-	s := New(secret, nil)
-	got, err := s.Unsign(token)
+	s := New(secret, &Options{Timestamp: true})
+	token := s.Sign(data)
 
-	if got != nil {
-		t.Error("Unsign returned data, but should have returned nil")
+	// Make sure we got the same payload
+	if subtle.ConstantTimeCompare(token[0:27], data) != 1 {
+		t.Logf("token: \n%s\n", token[0:27])
+		t.Logf("want: \n%s\n", data)
+		t.Fatal("Payload was changed")
 	}
 
-	if err != ErrShortToken {
-		t.Fatal("Unsign did not return the correct error")
+	// Make sure we got a timestamp.... (not a great test..)
+	if token[27] != '.' || token[34] != '.' {
+		t.Fatal("Doesn't appear to be a timestamp.")
 	}
 
 }
