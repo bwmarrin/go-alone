@@ -56,10 +56,9 @@ func main() {
 	}
 
 	// You can pass options to your new signer with the Options{} struct
-	// like this.
 	o := new(goalone.Options)
 
-	// You have the signer add timestamp to each token like this
+	// You can have the signer add timestamp to each token like this
 	o.Timestamp = true
 
 	// You can even set a custom timestamp epoch, if you want.
