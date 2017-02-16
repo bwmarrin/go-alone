@@ -12,8 +12,8 @@ exactly the same data that you originally signed.
 
 The development of go-alone was highly influenced by the popular [itsdangerous](http://pythonhosted.org/itsdangerous/)
 python library.  The tokens go-alone creates are very similar to itsdangerous 
-tokens and there is a degree of compatibility with itsdangerous tokens.  
-Reference the itsdangerous_test.go for examples on how to work with itsdangerous
+tokens and there is a degree of compatibility with itsdangerous tokens.
+Reference itsdangerous_test.go for examples on how to work with itsdangerous
 tokens using go-alone.
 
 go-alone tokens solve a similar problem to what JWT tokens solve. However
