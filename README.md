@@ -16,9 +16,9 @@ tokens and there is a degree of compatibility with itsdangerous tokens.
 Reference itsdangerous_test.go for examples on how to work with itsdangerous
 tokens using go-alone.
 
-go-alone tokens solve a similar problem to what JWT tokens solve. However
-go-alone tokens are smaller so they take less bandwidth and time to transmit 
-across networks and of course less space to store.  
+go-alone tokens solve a similar problem to what [JSON Web Tokens](https://jwt.io/)
+solve. However go-alone tokens are smaller so they take less bandwidth and time
+to transmit across networks and of course less space to store.  
 
 **For help with this package or general Go discussion, please join the [Discord 
 Gophers](https://discord.gg/0f1SbxBZjYq9jLBk) chat server.**
