@@ -26,7 +26,7 @@ var (
 	ItsDangerousSerializerSalt = []byte(`itsdangerous`)
 )
 
-// This test provides an example and a compatability test to the itsdangerous
+// This test provides an example and a compatibility test to the itsdangerous
 // "Signer" signer.  This signer uses "Salt" by default, which is combined
 // with the secret key and sha1.Sum'd.  Following this example you should be
 // able to sign or unsign this type of itsdangerous token.
@@ -59,7 +59,7 @@ func TestItsDangerousSigner(t *testing.T) {
 	}
 }
 
-// This test provides an example and a compatability test to the itsdangerous
+// This test provides an example and a compatibility test to the itsdangerous
 // Serializer signer.  This signer uses "Salt" by default, which is combined
 // with the secret key and sha1.Sum'd.  Following this example you should be
 // able to sign or unsign this type of itsdangerous token.
@@ -92,7 +92,7 @@ func TestItsDangerousSerializer(t *testing.T) {
 	}
 }
 
-// This test provides an example and a compatability test to the itsdangerous
+// This test provides an example and a compatibility test to the itsdangerous
 // URLSafeSerializer signer.  This signer uses "Salt" by default, which is
 // combined with the secret key and sha1.Sum'd.  Following this example you
 // should be able to sign or unsign this type of itsdangerous token.
