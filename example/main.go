@@ -61,11 +61,10 @@ func main() {
 	// You can have the signer add timestamp to each token like this
 	o.Timestamp = true
 
-	// You can even set a custom timestamp epoch, if you want.
-	// Just give it a unix timestamp in seconds and go-alone will
-	// use it as an offset of all timestamps. This will allow you
-	// to better future proof your tokens or to just make them
-	// more obsecure.
+	// You can even set a custom timestamp epoch, if you want. Just give it a
+	// unix timestamp in seconds and go-alone will use it as an offset for all
+	// timestamps. This will allow you to better future proof your tokens or to
+	// just make them more obsecure.
 	o.Epoch = 1293840000
 
 	// You can use a different algorithm if you wish for better security
