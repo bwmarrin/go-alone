@@ -19,6 +19,7 @@ type Options struct {
 	Algorithm func() hash.Hash
 
 	// Epoch to use for Timestamps, when signing/parsing Tokens
+	// Number of seconds since January 1, 1970 UTC
 	Epoch int64
 
 	// Should the Sign method add a timestamp to tokens?
@@ -75,7 +76,7 @@ func (s *Sword) Sign(data []byte) []byte {
 	var t []byte
 
 	if s.Timestamp {
-		now := time.Now().UTC().Unix() - s.Epoch
+		now := time.Now().Unix() - s.Epoch
 		ts := encodeUint64(uint64(now))
 		t = make([]byte, 0, len(data)+len(ts)+el+2)
 		t = append(t, data...)

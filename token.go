@@ -22,7 +22,7 @@ func (s *Sword) Parse(t []byte) Token {
 	token := Token{}
 
 	if s.Timestamp {
-		token.Timestamp = time.Unix(int64(decodeUint64(t[tl-(el+7):tl-(el+1)])), 0)
+		token.Timestamp = time.Unix(int64(decodeUint64(t[tl-(el+7):tl-(el+1)]))+s.Epoch, 0)
 		token.Payload = t[0 : tl-(el+8)]
 	} else {
 		token.Payload = t[0 : tl-(el+1)]
