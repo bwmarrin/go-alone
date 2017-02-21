@@ -23,6 +23,12 @@ to transmit across networks and of course less space to store.
 **For help with this package or general Go discussion, please join the [Discord 
 Gophers](https://discord.gg/0f1SbxBZjYq9jLBk) chat server.**
 
+## Status @ 2017-02-21
+This package should **NOT** be considered stable and completed. While I feel the
+majority of this package is where I want it to be - there is still a good chance
+of some breaking changes in the near future.  I would guess within a month I will
+have the API stable/locked.
+
 ## Getting Started
 
 ### Installing
