@@ -22,8 +22,16 @@ func (s *Sword) Parse(t []byte) Token {
 	token := Token{}
 
 	if s.Timestamp {
-		token.Timestamp = time.Unix(int64(decodeUint64(t[tl-(el+7):tl-(el+1)]))+s.Epoch, 0)
-		token.Payload = t[0 : tl-(el+8)]
+		// we need to find out how many bytes the timestamp is.
+		// so lets start at the start of the hash, and work back looking for our
+		// separator - XXX: I'm sure there's room for improvement here.
+		for i := tl - (el + 2); i >= 0; i-- {
+			if t[i] == '.' {
+				token.Payload = t[0:i]
+				token.Timestamp = time.Unix(int64(decodeBase58(t[i+1:tl-(el+1)]))+s.Epoch, 0)
+				break
+			}
+		}
 	} else {
 		token.Payload = t[0 : tl-(el+1)]
 	}

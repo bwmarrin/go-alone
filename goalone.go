@@ -1,12 +1,10 @@
 package goalone
 
 import (
-	"bytes"
 	"crypto/hmac"
 	"crypto/sha1"
 	"crypto/subtle"
 	"encoding/base64"
-	"encoding/binary"
 	"errors"
 	"hash"
 	"sync"
@@ -37,6 +35,9 @@ type Sword struct {
 	Options
 }
 
+// ErrInvalidBase58 is returned by ParseBase58 when given an invalid []byte
+var ErrInvalidBase58 = errors.New("invalid base58")
+
 // ErrInvalidSignature is returned by Unsign when the provided token's
 // signatuire is not valid.
 var ErrInvalidSignature = errors.New("invalid signature")
@@ -48,6 +49,14 @@ var ErrShortToken = errors.New("token is too small to be valid")
 // New takes a secret key and returns a new Sword.  If no Options are provided
 // then minimal defaults will be used.
 func New(key []byte, o *Options) *Sword {
+
+	// Create a map for decoding Base58.  This speeds up the process tremendously.
+	for i := 0; i < len(encodeBase58Map); i++ {
+		decodeBase58Map[i] = 0xFF
+	}
+	for i := 0; i < len(encodeBase58Map); i++ {
+		decodeBase58Map[encodeBase58Map[i]] = byte(i)
+	}
 
 	if key == nil {
 		return &Sword{}
@@ -76,12 +85,13 @@ func (s *Sword) Sign(data []byte) []byte {
 	var t []byte
 
 	if s.Timestamp {
-		now := time.Now().Unix() - s.Epoch
-		ts := encodeUint64(uint64(now))
-		t = make([]byte, 0, len(data)+len(ts)+el+2)
+		ts := time.Now().Unix() - s.Epoch
+		etl := encodeBase58Len(ts)
+		t = make([]byte, 0, len(data)+etl+el+2) // +2 for "." chars
 		t = append(t, data...)
 		t = append(t, '.')
-		t = append(t, ts...)
+		t = t[0 : len(t)+etl] // expand for timestamp
+		encodeBase58(ts, t)
 	} else {
 		t = make([]byte, 0, len(data)+el+1)
 		t = append(t, data...)
@@ -122,6 +132,16 @@ func (s *Sword) Unsign(token []byte) ([]byte, error) {
 	return token[0 : tl-(el+1)], nil
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Unexported Code ////////////////////////////////////////////////////////////
+
+// This is the map of characters used during base58 encoding.  These replicate
+// the flickr shortid mapping.
+const encodeBase58Map = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ"
+
+// Used to create a decode map so we can decode base58 fairly fast.
+var decodeBase58Map [256]byte
+
 // sign creates the encoded signature of payload and writes to dst
 func (s *Sword) sign(dst, payload []byte) {
 
@@ -137,25 +157,32 @@ func (s *Sword) sign(dst, payload []byte) {
 	base64.RawURLEncoding.Encode(dst, h)
 }
 
-func encodeUint64(i uint64) []byte {
+func encodeBase58Len(i int64) int {
 
-	// covert int into bytes
-	buf := make([]byte, 8)
-	binary.BigEndian.PutUint64(buf, i)
-
-	// encode bytes to base64, striping off leading 0's
-	buf2 := make([]byte, 11)
-	base64.RawURLEncoding.Encode(buf2, bytes.TrimLeft(buf, "\x00"))
-
-	// return result, removing training `\x00`
-	return bytes.TrimRight(buf2, "\x00")
+	var l int = 1
+	for i >= 58 {
+		l++
+		i /= 58
+	}
+	return l
 }
 
-func decodeUint64(b []byte) uint64 {
+// encode time int64 into b []byte
+func encodeBase58(i int64, b []byte) {
+	p := len(b) - 1
+	for i >= 58 {
+		b[p] = encodeBase58Map[i%58]
+		p--
+		i /= 58
+	}
+	b[p] = encodeBase58Map[i]
+}
 
-	l := len(b) * 6 / 8 // cause DecodedLen has a bug // https://github.com/golang/go/commit/87151c82b68023e4224b016a6a66ead2c4b8ece7
-	buf := make([]byte, 8)
-
-	base64.RawURLEncoding.Decode(buf[8-l:], b)
-	return binary.BigEndian.Uint64(buf)
+// parses a base58 []byte into a int64
+func decodeBase58(b []byte) int64 {
+	var id int64
+	for p := range b {
+		id = id*58 + int64(decodeBase58Map[b[p]])
+	}
+	return id
 }

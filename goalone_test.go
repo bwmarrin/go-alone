@@ -3,9 +3,29 @@ package goalone
 import (
 	"crypto/sha1"
 	"crypto/subtle"
+	"fmt"
 	"testing"
+	"time"
 )
 
+func TestTimeCoding(t *testing.T) {
+
+	New(nil, nil) // needed to init the decodemap
+
+	var now int64
+	for i := 0; i < 41; i++ {
+		b := make([]byte, encodeBase58Len(now))
+		encodeBase58(now, b)
+		id := decodeBase58(b)
+		if id != now {
+			fmt.Printf("Time.Now()   : %d\n", now)
+			fmt.Printf("encodeBase58 : %s\n", b)
+			fmt.Printf("decodeBase58 : %d\n", id)
+			t.Fatal("id != now!")
+		}
+		now += 1 + now*2
+	}
+}
 func TestNewNil(t *testing.T) {
 
 	s := New(nil, nil)
@@ -220,6 +240,18 @@ func BenchmarkReuseSignLittle(b *testing.B) {
 	}
 }
 
+func BenchmarkReuseSignTimestampLittle(b *testing.B) {
+	s := New([]byte(`B1nzyRateLimits`), &Options{Timestamp: true})
+	data := []byte(`1203981209381290.LutinRocks`)
+
+	b.ReportAllocs()
+	b.ResetTimer()
+
+	for n := 0; n < b.N; n++ {
+		s.Sign(data)
+	}
+}
+
 func BenchmarkSignBig(b *testing.B) {
 	secret := []byte(`B1nzyRateLimits`)
 	data := []byte(`1203981209381290.7h90g7h089234g75908347gh09384h7v0897fg08947f5097423058974h908fg702f9j75028fg5704239hg7053498dj7249038jd57j097g5v029dh79hc47f507v9082h7f509234j7dc02d750j24935h7f924`)
@@ -298,54 +330,27 @@ func BenchmarkUnsignReuseBig(b *testing.B) {
 	}
 }
 
-func TestEncodeUint64(t *testing.T) {
-	b1 := []byte{102, 95, 95, 95, 95, 95, 95, 95, 95, 95, 56}
-	b2 := []byte{95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 56}
-	var i1 uint64 = 9223372036854775807
-	var i2 uint64 = 0xFFFFFFFFFFFFFFFF
+func BenchmarkEncodeBase58(b *testing.B) {
 
-	if subtle.ConstantTimeCompare(b1, encodeUint64(i1)) != 1 {
-		t.Fatal("encodeUint64 returned bad value for i1")
-	}
-
-	if subtle.ConstantTimeCompare(b2, encodeUint64(i2)) != 1 {
-		t.Fatal("encodeUint64 returned bad value for i2")
-	}
-}
-
-func TestDecodeUint64(t *testing.T) {
-	var i uint64 = 0x00000000FFFFFFFF
-	b := encodeUint64(i)
-	if decodeUint64(b) != i {
-		t.Fatal("decodeUint64 returned bad value for b1")
-	}
-
-	var i2 uint64 = 0xFFFFFFFFFFFFFFFF
-	b2 := encodeUint64(i2)
-	if decodeUint64(b2) != i2 {
-		t.Fatal("decodeUint64 returned bad value for b2")
-	}
-}
-
-func BenchmarkEncodeUint64(b *testing.B) {
-
-	var ui uint64 = 0xFFFFFFFFFFFFFFFF
+	now := time.Now().Unix()
+	by := make([]byte, 6)
 
 	b.ReportAllocs()
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		encodeUint64(ui)
+		encodeBase58(now, by)
 	}
 }
 
-func BenchmarkDecodeUint64(b *testing.B) {
+func BenchmarkDecodeBase58(b *testing.B) {
 
-	var i uint64 = 0x00000000FFFFFFFF
-	ei := encodeUint64(i)
+	now := time.Now().Unix()
+	by := make([]byte, 6)
+	encodeBase58(now, by)
 
 	b.ReportAllocs()
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		decodeUint64(ei)
+		decodeBase58([]byte(by))
 	}
 }
