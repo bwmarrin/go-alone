@@ -35,9 +35,6 @@ type Sword struct {
 	Options
 }
 
-// ErrInvalidBase58 is returned by ParseBase58 when given an invalid []byte
-var ErrInvalidBase58 = errors.New("invalid base58")
-
 // ErrInvalidSignature is returned by Unsign when the provided token's
 // signatuire is not valid.
 var ErrInvalidSignature = errors.New("invalid signature")
