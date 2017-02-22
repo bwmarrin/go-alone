@@ -151,6 +151,7 @@ func (s *Sword) sign(dst, payload []byte) {
 	base64.RawURLEncoding.Encode(dst, h)
 }
 
+// returns the len of base58 encoded i
 func encodeBase58Len(i int64) int {
 
 	var l = 1
