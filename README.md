@@ -12,9 +12,12 @@ exactly the same data that you originally signed.
 
 The development of go-alone was highly influenced by the popular [itsdangerous](http://pythonhosted.org/itsdangerous/)
 python library.  The tokens go-alone creates are very similar to itsdangerous 
-tokens and there is a degree of compatibility with itsdangerous tokens.
-Reference itsdangerous_test.go for examples on how to work with itsdangerous
-tokens using go-alone.
+tokens however they are not compatible with each other. go-alone uses a faster
+integer optimized base58 coding for timestamps and does not have the "Salt" or
+serializer features of itsdangerous. Both of those things can still be 
+accomplished. You can prepending your "Salt" key to the secret (this is how Salting 
+is done in itsdangerous) and use any of the existing Go serializers before 
+passing the data to go-alone for signing.
 
 go-alone tokens solve a similar problem to what [JSON Web Tokens](https://jwt.io/)
 solve. However go-alone tokens are smaller so they take less bandwidth and time
