@@ -15,7 +15,7 @@ python library.  The tokens go-alone creates are very similar to itsdangerous
 tokens however they are not compatible with each other. go-alone uses a faster
 integer optimized base58 coding for timestamps and does not have the "Salt" or
 serializer features of itsdangerous. Both of those things can still be 
-accomplished. You can prepending your "Salt" key to the secret (this is how Salting 
+accomplished. You can prepend your "Salt" key to the secret (this is how salting 
 is done in itsdangerous) and use any of the existing Go serializers before 
 passing the data to go-alone for signing.
 
