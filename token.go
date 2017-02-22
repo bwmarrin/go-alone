@@ -28,7 +28,7 @@ func (s *Sword) Parse(t []byte) Token {
 		for i := tl - (el + 2); i >= 0; i-- {
 			if t[i] == '.' {
 				token.Payload = t[0:i]
-				token.Timestamp = time.Unix(int64(decodeBase58(t[i+1:tl-(el+1)]))+s.Epoch, 0)
+				token.Timestamp = time.Unix(decodeBase58(t[i+1:tl-(el+1)])+s.Epoch, 0)
 				break
 			}
 		}

@@ -159,7 +159,7 @@ func (s *Sword) sign(dst, payload []byte) {
 
 func encodeBase58Len(i int64) int {
 
-	var l int = 1
+	var l = 1
 	for i >= 58 {
 		l++
 		i /= 58
