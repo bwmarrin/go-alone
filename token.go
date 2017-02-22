@@ -11,9 +11,9 @@ type Token struct {
 	Timestamp time.Time
 }
 
-// Parse will parse the []byte token return from Sign based on the Sword Options
-// into a Token struct. For this to work corectly the Sword Options need to match
-// that of what was used when the token was initially created.
+// Parse will parse the []byte token returned from Sign based on the Sword
+// Options into a Token struct. For this to work corectly the Sword Options need
+// to match that of what was used when the token was initially created.
 func (s *Sword) Parse(t []byte) Token {
 
 	tl := len(t)
