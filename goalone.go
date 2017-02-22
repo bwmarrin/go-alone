@@ -49,9 +49,6 @@ func New(key []byte, o *Options) *Sword {
 
 	// Create a map for decoding Base58.  This speeds up the process tremendously.
 	for i := 0; i < len(encodeBase58Map); i++ {
-		decodeBase58Map[i] = 0xFF
-	}
-	for i := 0; i < len(encodeBase58Map); i++ {
 		decodeBase58Map[encodeBase58Map[i]] = byte(i)
 	}
 
