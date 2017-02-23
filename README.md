@@ -1,7 +1,8 @@
-<img align="right" src="https://raw.githubusercontent.com/wiki/bwmarrin/go-alone/8bitsword.png">
 It's dangerous to **go-alone**! Take this.
-
+==========================================
 [![GoDoc](https://godoc.org/github.com/bwmarrin/go-alone?status.svg)](https://godoc.org/github.com/bwmarrin/go-alone) [![Go report](http://goreportcard.com/badge/bwmarrin/go-alone)](http://goreportcard.com/report/bwmarrin/go-alone) [![Build Status](https://travis-ci.org/bwmarrin/go-alone.svg?branch=master)](https://travis-ci.org/bwmarrin/go-alone) [![Coverage](http://gocover.io/_badge/github.com/bwmarrin/go-alone)](https://gocover.io/github.com/bwmarrin/go-alone) [![Discord Gophers](https://img.shields.io/badge/Discord%20Gophers-%23info-blue.svg)](https://discord.gg/0f1SbxBZjYq9jLBk)
+
+<img align="right" src="https://raw.githubusercontent.com/wiki/bwmarrin/go-alone/8bitsword.png">
 
 go-alone is a [Go](https://golang.org/) package that provides A very simple to 
 use HMAC signer and unsigner that tries to be fairly performant.  This is useful
@@ -26,7 +27,7 @@ to transmit across networks and of course less space to store.
 **For help with this package or general Go discussion, please join the [Discord 
 Gophers](https://discord.gg/0f1SbxBZjYq9jLBk) chat server.**
 
-## Status @ 2017-02-21
+## :exclamation: Status @ 2017-02-21
 This package should **NOT** be considered stable and completed. While I feel the
 majority of this package is where I want it to be - there is still a good chance
 of some breaking changes in the near future.  I would guess within a month I will
