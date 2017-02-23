@@ -13,7 +13,7 @@ import (
 
 // Options that can be configured and passed to New()
 type Options struct {
-	// hash algorithm to use when signing tokens, ex. sha1.New
+	// hash algorithm to use when signing tokens, ex. md5.New, sha256.New
 	Algorithm func() hash.Hash
 
 	// Epoch to use for Timestamps, when signing/parsing Tokens
