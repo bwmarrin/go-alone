@@ -4,25 +4,14 @@ It's dangerous to go-alone! Take this.
 
 <img align="right" src="https://raw.githubusercontent.com/wiki/bwmarrin/go-alone/8bitsword.png">
 
-go-alone is a [Go](https://golang.org/) package that provides A very simple to 
-use HMAC signer and unsigner that tries to be fairly performant.  This is useful
-for one-time email tokens, authentication tokens, or to cryptographically sign 
-any arbitrary data so that it can be transmitted or stored in an unsecure way 
-but is tamper proof so when it comes back to you, you can verify that it is 
-exactly the same data that you originally signed.
+go-alone is a [Go](https://golang.org/) package that provides
+* Methods to create and verify [HMAC](https://en.wikipedia.org/wiki/Hash-based_message_authentication_code) signatures of data
+* Ability to add timestamps to signed tokens, use custom epoch, and customize the algorithm used.
+* HMAC-SHA1 signatures and Base58 time encoding provides good performance without sacrificing security.
+* A very simple to use API with good documentation.
+* Various helper methods for parsing tokens
 
-The development of go-alone was highly influenced by the popular [itsdangerous](http://pythonhosted.org/itsdangerous/)
-python library.  The tokens go-alone creates are very similar to itsdangerous 
-tokens however they are not compatible with each other. go-alone uses a faster
-integer optimized base58 coding for timestamps and does not have the "Salt" or
-serializer features of itsdangerous. Both of those things can still be 
-accomplished. You can prepend your "Salt" key to the secret (this is how salting 
-is done in itsdangerous) and use any of the existing Go serializers before 
-passing the data to go-alone for signing.
-
-go-alone tokens solve a similar problem to what [JSON Web Tokens](https://jwt.io/)
-solve. However go-alone tokens are smaller so they take less bandwidth and time
-to transmit across networks and of course less space to store.  
+**For more information, please read the [wiki](https://github.com/bwmarrin/go-alone/wiki)**
 
 **For help with this package or general Go discussion, please join the [Discord 
 Gophers](https://discord.gg/0f1SbxBZjYq9jLBk) chat server.**
