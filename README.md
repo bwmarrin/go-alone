@@ -5,7 +5,7 @@ It's dangerous to go-alone! Take this.
 <img align="right" src="https://raw.githubusercontent.com/wiki/bwmarrin/go-alone/8bitsword.png">
 
 go-alone is a [Go](https://golang.org/) package that provides
-* Methods to create and verify [HMAC](https://en.wikipedia.org/wiki/Hash-based_message_authentication_code) signatures of data
+* Methods to create and verify [MAC](https://en.wikipedia.org/wiki/Message_authentication_code) signatures of data
 * Ability to add timestamps to signed tokens and use custom epoch if needed.
 * BLAKE2b signatures and Base58 time encoding provides outstanding performance and security.
 * A very simple to use API with good documentation.

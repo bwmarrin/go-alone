@@ -26,10 +26,10 @@ type Options struct {
 // package.
 type Sword struct {
 	sync.Mutex
-	hash  hash.Hash
-	dirty bool
-
-	Options
+	hash      hash.Hash
+	dirty     bool
+	epoch     int64
+	timestamp bool
 }
 
 // ErrInvalidSignature is returned by Unsign when the provided token's
@@ -61,7 +61,9 @@ func New(key []byte, o *Options) *Sword {
 		return &Sword{hash: h}
 	}
 
-	s := &Sword{Options: *o}
+	s := &Sword{}
+	s.epoch = o.Epoch
+	s.timestamp = o.Timestamp
 	h, err := blake2b.New256(key)
 	if err != nil {
 		panic(err)
@@ -79,8 +81,8 @@ func (s *Sword) Sign(data []byte) []byte {
 	el := base64.RawURLEncoding.EncodedLen(s.hash.Size())
 	var t []byte
 
-	if s.Timestamp {
-		ts := time.Now().Unix() - s.Epoch
+	if s.timestamp {
+		ts := time.Now().Unix() - s.epoch
 		etl := encodeBase58Len(ts)
 		t = make([]byte, 0, len(data)+etl+el+2) // +2 for "." chars
 		t = append(t, data...)
