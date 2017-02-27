@@ -1,7 +1,6 @@
 package goalone
 
 import (
-	"crypto/sha1"
 	"crypto/subtle"
 	"fmt"
 	"testing"
@@ -76,31 +75,10 @@ func TestNewSecretOptions(t *testing.T) {
 	}
 }
 
-func TestNewSecretOptionsAlgorithm(t *testing.T) {
-
-	secret := []byte(`B1nzyRateLimits`)
-	s := New(secret, &Options{Algorithm: sha1.New})
-	if s == nil {
-		t.Fatal("New returned a nil")
-	}
-
-	if s.Algorithm == nil {
-		t.Fatal("New returned a Sword with a nil Algorithm")
-	}
-
-	if s.hash == nil {
-		t.Fatal("New returned a Sword with a nil hash")
-	}
-
-	if s.dirty {
-		t.Fatal("New returned a dirty hash")
-	}
-}
-
 func TestUnsignTooLittle(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLimits`)
-	token := []byte("9yhDXQheVrk0W-dcDAnW0_DglKk")
+	token := []byte("9yhD.QheV.k0W")
 
 	s := New(secret, nil)
 	got, err := s.Unsign(token)
@@ -119,7 +97,7 @@ func TestSign(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLimits`)
 	data := []byte(`1203981209381290.LutinRocks`)
-	want := []byte("1203981209381290.LutinRocks.9yhDXQheVrk0W-dcDAnW0_DglKk")
+	want := []byte(`1203981209381290.LutinRocks.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 
 	s := New(secret, nil)
 	token := s.Sign(data)
@@ -173,7 +151,7 @@ func TestSignTimestamp(t *testing.T) {
 func TestUnsign(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLimits`)
-	token := []byte("1203981209381290.LutinRocks.9yhDXQheVrk0W-dcDAnW0_DglKk")
+	token := []byte(`1203981209381290.LutinRocks.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 	want := []byte(`1203981209381290.LutinRocks`)
 
 	s := New(secret, nil)
@@ -192,7 +170,7 @@ func TestUnsign(t *testing.T) {
 		t.Fatal("Hash is not dirty, but it should be")
 	}
 
-	token = []byte("1203981209381290.LutinRocks.9yhDXQheVrkkW-dcDAnW0_DglKk")
+	token = []byte(`1203981209381290.LutinRocks.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNR0`)
 	got, err = s.Unsign(token)
 	if err != ErrInvalidSignature {
 		t.Fatal("Unsign returned incorrect error")

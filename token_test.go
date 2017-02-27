@@ -9,7 +9,7 @@ func TestParse(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLimits`)
 	want := []byte(`1203981209381290.LutinRocks`)
-	bt := []byte(`1203981209381290.LutinRocks.9yhDXQheVrk0W-dcDAnW0_DglKk`)
+	bt := []byte(`1203981209381290.LutinRocks.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 
 	s := New(secret, nil)
 	token := s.Parse(bt)
@@ -28,7 +28,7 @@ func TestParse(t *testing.T) {
 func TestParseTimestamp(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLimits`)
-	bt := []byte(`1203981209381290.LutinRocks.3gteYe.jeVOTSaWET1CPYeBRd_bLTwLYFw`)
+	bt := []byte(`1203981209381290.LutinRocks.3gteYe.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 	want := []byte(`1203981209381290.LutinRocks`)
 
 	s := New(secret, &Options{Timestamp: true})
@@ -49,7 +49,7 @@ func TestParseTimestamp(t *testing.T) {
 
 func BenchmarkParse(b *testing.B) {
 
-	bt := []byte(`1203981209381290.LutinRocks.9yhDXQheVrk0W-dcDAnW0_DglKk`)
+	bt := []byte(`1203981209381290.LutinRocks.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 	secret := []byte(`B1nzyRateLimits`)
 	s := New(secret, nil)
 
@@ -62,7 +62,7 @@ func BenchmarkParse(b *testing.B) {
 
 func BenchmarkParseTimestamp(b *testing.B) {
 
-	bt := []byte(`1203981209381290.LutinRocks.3gteYe.jeVOTSaWET1CPYeBRd_bLTwLYFw`)
+	bt := []byte(`1203981209381290.LutinRocks.3gteYe.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 	secret := []byte(`B1nzyRateLimits`)
 	s := New(secret, &Options{Timestamp: true})
 

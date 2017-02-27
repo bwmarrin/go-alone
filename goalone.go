@@ -1,21 +1,18 @@
 package goalone
 
 import (
-	"crypto/hmac"
-	"crypto/sha1"
 	"crypto/subtle"
 	"encoding/base64"
 	"errors"
 	"hash"
 	"sync"
 	"time"
+
+	"golang.org/x/crypto/blake2b"
 )
 
 // Options that can be configured and passed to New()
 type Options struct {
-	// hash algorithm to use when signing tokens, ex. md5.New, sha256.New
-	Algorithm func() hash.Hash
-
 	// Epoch to use for Timestamps, when signing/parsing Tokens
 	// Number of seconds since January 1, 1970 UTC
 	Epoch int64
@@ -44,7 +41,7 @@ var ErrInvalidSignature = errors.New("invalid signature")
 var ErrShortToken = errors.New("token is too small to be valid")
 
 // New takes a secret key and returns a new Sword.  If no Options are provided
-// then minimal defaults will be used.
+// then minimal defaults will be used. key must be 64 bytes or less in size.
 func New(key []byte, o *Options) *Sword {
 
 	// Create a map for decoding Base58.  This speeds up the process tremendously.
@@ -57,15 +54,19 @@ func New(key []byte, o *Options) *Sword {
 	}
 
 	if o == nil {
-		return &Sword{hash: hmac.New(sha1.New, key)}
+		h, err := blake2b.New256(key)
+		if err != nil {
+			panic(err)
+		}
+		return &Sword{hash: h}
 	}
 
 	s := &Sword{Options: *o}
-	if s.Algorithm == nil {
-		s.hash = hmac.New(sha1.New, key)
-	} else {
-		s.hash = hmac.New(s.Algorithm, key)
+	h, err := blake2b.New256(key)
+	if err != nil {
+		panic(err)
 	}
+	s.hash = h
 
 	return s
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/sha256"
 	"time"
 
 	"github.com/bwmarrin/go-alone"
@@ -67,17 +66,13 @@ func main() {
 	// just make them more obsecure.
 	o.Epoch = 1293840000
 
-	// You can use a different algorithm if you wish for better security
-	// or a less secure one that is maybe faster? Up to you.
-	o.Algorithm = sha256.New
-
 	// Now lets pass these options to our new signer then sign our data
 	s = goalone.New(secret, o)
 	token = s.Sign(data)
 
 	// Of course you can do this all as a one liner too, but it does start to get
 	// a bit too long :)
-	token = goalone.New(secret, &goalone.Options{Timestamp: true, Epoch: 1293840000, Algorithm: sha256.New}).Sign(data)
+	token = goalone.New(secret, &goalone.Options{Timestamp: true, Epoch: 1293840000}).Sign(data)
 
 	// You can parse out a token into a struct that separates the payload and
 	// timestamp for you.
