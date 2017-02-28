@@ -56,20 +56,20 @@ func main() {
 	var data = []byte("It's dangerous to go alone! Take this.")
 
 	// Create a new Signer using our secret
-  // We pass over the secret key, and set the Options to nil
-  // Take a look at the documentation to see what Options can be set.
+	// We pass over the secret key, and set the Options to nil
+	// Take a look at the documentation to see what Options can be set.
 	s := goalone.New(secret, nil)
 
 	// Sign and return a token in the form of `data.signature`
 	token := s.Sign(data)
 
-  // Unsign the token to verify it - if successful the data portion of the
-  // token is returned.  If unsuccessful then d will be nil, and an error
-  // is returned.
+	// Unsign the token to verify it - if successful the data portion of the
+	// token is returned.  If unsuccessful then d will be nil, and an error
+	// is returned.
 	d, err := s.Unsign(token)
 	if err != nil {
 		// signature is not valid. Token was tampered with, forged, or maybe it's
-    // not even a token at all! Either way, it's not safe to use it.
+		// not even a token at all! Either way, it's not safe to use it.
 	} else {
 		// signature is valid, it is safe to use the data
 		println(string(d))
