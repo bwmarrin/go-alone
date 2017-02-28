@@ -32,10 +32,6 @@ func TestNewNil(t *testing.T) {
 		t.Fatal("New returned a nil")
 	}
 
-	if s.hash != nil {
-		t.Fatal("New returned a Sword without nil hash")
-	}
-
 	if s.dirty {
 		t.Fatal("New returned a dirty hash")
 	}
@@ -56,6 +52,18 @@ func TestNewSecret(t *testing.T) {
 	if s.dirty {
 		t.Fatal("New returned a dirty hash")
 	}
+}
+
+func TestNewSecretTooBig(t *testing.T) {
+
+	secret := []byte(`B1nzyRateLid;flkjasdl;fjasd;lkfjkl;ljasd;fkljsda;fkljasd;klfj;asdjts`)
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("The code did not panic")
+		}
+	}()
+
+	New(secret, nil)
 }
 
 func TestNewSecretOptions(t *testing.T) {

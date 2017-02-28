@@ -49,21 +49,13 @@ func New(key []byte, o *Options) *Sword {
 		decodeBase58Map[encodeBase58Map[i]] = byte(i)
 	}
 
-	if key == nil {
-		return &Sword{}
-	}
-
-	if o == nil {
-		h, err := blake2b.New256(key)
-		if err != nil {
-			panic(err)
-		}
-		return &Sword{hash: h}
-	}
-
 	s := &Sword{}
-	s.epoch = o.Epoch
-	s.timestamp = o.Timestamp
+
+	if o != nil {
+		s.epoch = o.Epoch
+		s.timestamp = o.Timestamp
+	}
+
 	h, err := blake2b.New256(key)
 	if err != nil {
 		panic(err)
