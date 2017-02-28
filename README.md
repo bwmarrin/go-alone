@@ -37,7 +37,47 @@ go get github.com/bwmarrin/go-alone
 
 ### Usage
 
-See the example folder for a program that demonstrates using this package.
+Here's a basic example below, for more [example](https://github.com/bwmarrin/go-alone/tree/master/example)
+look in the example folder that has an example program that demonstrates using 
+this package.
+
+```go
+package main
+
+import (
+	"github.com/bwmarrin/go-alone"
+)
+
+func main() {
+
+	// This secret is used as the hash key for the signer.
+	var secret = []byte("It's a secret to everybody")
+
+	// This data is what we will be signing below.
+	var data = []byte("It's dangerous to go alone! Take this.")
+
+	// Create a new Signer using our secret
+  // We pass over the secret key, and set the Options to nil
+  // Take a look at the documentation to see what Options can be set.
+	s := goalone.New(secret, nil)
+
+	// Sign and return a token in the form of `data.signature`
+	token := s.Sign(data)
+
+  // Unsign the token to verify it - if successful the data portion of the
+  // token is returned.  If unsuccessful then d will be nil, and an error
+  // is returned.
+	d, err := s.Unsign(token)
+	if err != nil {
+		// signature is not valid. Token was tampered with, forged, or maybe it's
+    // not even a token at all! Either way, it's not safe to use it.
+	} else {
+		// signature is valid, it is safe to use the data
+		println(string(d))
+	}
+}
+```
+
 
 ### Performance / Testing
 
