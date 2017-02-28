@@ -41,8 +41,11 @@ var ErrInvalidSignature = errors.New("invalid signature")
 var ErrShortToken = errors.New("token is too small to be valid")
 
 // New takes a secret key and returns a new Sword.  If no Options are provided
-// then minimal defaults will be used. key must be 64 bytes or less in size.
+// then minimal defaults will be used. NOTE: The key must be 64 bytes or less
+// in size. If a larger key is provided it will be truncated to 64 bytes.
 func New(key []byte, o *Options) *Sword {
+
+	var err error
 
 	// Create a map for decoding Base58.  This speeds up the process tremendously.
 	for i := 0; i < len(encodeBase58Map); i++ {
@@ -56,11 +59,16 @@ func New(key []byte, o *Options) *Sword {
 		s.timestamp = o.Timestamp
 	}
 
-	h, err := blake2b.New256(key)
+	s.hash, err = blake2b.New256(key)
 	if err != nil {
-		panic(err)
+		// The only possible error that can be returned here is if the key
+		// is larger than 64 bytes - which the blake2b hash will not accept.
+		// This is a case that is so easily avoidable when using this pacakge
+		// and since chaining is convenient for this package.  We're going
+		// to do the below to handle this possible case so we don't have
+		// to return an error.
+		s.hash, _ = blake2b.New256(key[0:64])
 	}
-	s.hash = h
 
 	return s
 }
