@@ -25,11 +25,11 @@ of some breaking changes in the near future.  I would guess within a month I wil
 have the API stable/locked.
 
 ## Getting Started
+This assumes you already have a working Go environment, if not please see
+[this page](https://golang.org/doc/install) first.
 
 ### Installing
 
-This assumes you already have a working Go environment, if not please see
-[this page](https://golang.org/doc/install) first.
 
 ```sh
 go get github.com/bwmarrin/go-alone
