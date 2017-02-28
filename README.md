@@ -16,9 +16,11 @@ go-alone is a [Go](https://golang.org/) package that provides
 **For help with this package or general Go discussion, please join the [Discord 
 Gophers](https://discord.gg/0f1SbxBZjYq9jLBk) chat server.**
 
-## :exclamation: Status @ 2017-02-21
-This package should **NOT** be considered stable and completed. While I feel the
-majority of this package is where I want it to be - there is still a good chance
+**For a fast and easy to use snowflake ID library, check out [this](https://github.com/bwmarrin/snowflake)**
+
+## :exclamation: Status @ 2017-02-28
+This package should not be considered stable and completed. While I feel the
+majority of this package is where I want it to be - there is still a slight chance
 of some breaking changes in the near future.  I would guess within a month I will
 have the API stable/locked.
 
