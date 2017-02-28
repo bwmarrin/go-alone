@@ -37,9 +37,8 @@ go get github.com/bwmarrin/go-alone
 
 ### Usage
 
-Here's a basic example below, for more [example](https://github.com/bwmarrin/go-alone/tree/master/example)
-look in the example folder that has an example program that demonstrates using 
-this package.
+Here's a basic example below.  There is also an example program in the [example](https://github.com/bwmarrin/go-alone/tree/master/example)
+folder that demonstrates a few more ways of using Go-Alone.
 
 ```go
 package main
