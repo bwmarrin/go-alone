@@ -38,7 +38,8 @@ go get github.com/bwmarrin/go-alone
 ### Usage
 
 Here's a basic example below.  There is also an example program in the [example](https://github.com/bwmarrin/go-alone/tree/master/example)
-folder that demonstrates a few more ways of using Go-Alone.
+folder that demonstrates a few more ways of using Go-Alone. You can read the API
+documentation on [GoDoc](https://godoc.org/github.com/bwmarrin/go-alone).
 
 ```go
 package main
