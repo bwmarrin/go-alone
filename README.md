@@ -18,9 +18,6 @@ Gophers](https://discord.gg/0f1SbxBZjYq9jLBk) chat server.**
 
 **For a fast and easy to use snowflake ID library, check out [this](https://github.com/bwmarrin/snowflake)**
 
-## Status @ 2017-04-18
-This package should be considered stable and completed with a frozen API.
-
 ## Getting Started
 This assumes you already have a working Go environment, if not please see
 [this page](https://golang.org/doc/install) first.
@@ -54,8 +51,6 @@ func main() {
 	var data = []byte("It's dangerous to go alone! Take this.")
 
 	// Create a new Signer using our secret
-	// We pass over the secret key, and set the Options to nil
-	// Take a look at the documentation to see what Options can be set.
 	s := goalone.New(secret)
 
 	// Sign and return a token in the form of `data.signature`
