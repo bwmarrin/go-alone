@@ -145,6 +145,28 @@ func TestSignTimestamp(t *testing.T) {
 
 }
 
+func TestSignEpoch(t *testing.T) {
+
+	secret := []byte(`B1nzyRateLimits`)
+	data := []byte(`1203981209381290.LutinRocks`)
+
+	s := New(secret, Epoch(1293840000), Timestamp)
+	token := s.Sign(data)
+
+	// Make sure we got the same payload
+	if subtle.ConstantTimeCompare(token[0:27], data) != 1 {
+		t.Logf("token: \n%s\n", token[0:27])
+		t.Logf("want: \n%s\n", data)
+		t.Fatal("Payload was changed")
+	}
+
+	// Make sure we got a timestamp.... (not a great test..)
+	if token[27] != '.' || token[33] != '.' {
+		t.Fatal("Doesn't appear to be a timestamp.")
+	}
+
+}
+
 func TestUnsign(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLimits`)
