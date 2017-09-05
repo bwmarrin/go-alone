@@ -11,7 +11,7 @@ func TestParse(t *testing.T) {
 	want := []byte(`1203981209381290.LutinRocks`)
 	bt := []byte(`1203981209381290.LutinRocks.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 
-	s := New(secret, nil)
+	s := New(secret)
 	token := s.Parse(bt)
 
 	if subtle.ConstantTimeCompare(token.Payload, want) != 1 {
@@ -31,7 +31,7 @@ func TestParseTimestamp(t *testing.T) {
 	bt := []byte(`1203981209381290.LutinRocks.3gteYe.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 	want := []byte(`1203981209381290.LutinRocks`)
 
-	s := New(secret, &Options{Timestamp: true})
+	s := New(secret, Timestamp)
 	token := s.Parse(bt)
 
 	if subtle.ConstantTimeCompare(token.Payload, want) != 1 {
@@ -51,7 +51,7 @@ func BenchmarkParse(b *testing.B) {
 
 	bt := []byte(`1203981209381290.LutinRocks.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 	secret := []byte(`B1nzyRateLimits`)
-	s := New(secret, nil)
+	s := New(secret)
 
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -64,7 +64,7 @@ func BenchmarkParseTimestamp(b *testing.B) {
 
 	bt := []byte(`1203981209381290.LutinRocks.3gteYe.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 	secret := []byte(`B1nzyRateLimits`)
-	s := New(secret, &Options{Timestamp: true})
+	s := New(secret, Timestamp)
 
 	b.ReportAllocs()
 	b.ResetTimer()

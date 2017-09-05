@@ -15,7 +15,7 @@ func main() {
 	var data = []byte("It's dangerous to go alone! Take this.")
 
 	// Create a new Signer using our secret
-	s := goalone.New(secret, nil)
+	s := goalone.New(secret)
 
 	// Sign and return a token in the form of `data.signature`
 	token := s.Sign(data)
@@ -43,10 +43,10 @@ func main() {
 	}
 
 	// You can also write one-liners when you will not be reusing the hash.
-	token3 := goalone.New(secret, nil).Sign(data)
+	token3 := goalone.New(secret).Sign(data)
 
 	// Of course, you can Unsign with a one-liner too.
-	data3, err3 := goalone.New(secret, nil).Unsign(token3)
+	data3, err3 := goalone.New(secret).Unsign(token3)
 	if err3 != nil {
 		// signature is not valid
 	} else {
@@ -54,25 +54,25 @@ func main() {
 		println(string(data3))
 	}
 
-	// You can pass options to your new signer with the Options{} struct
-	o := new(goalone.Options)
+	// You can pass functional options to the New() function to customize
+	// a few things.
 
-	// You can have the signer add timestamp to each token like this
-	o.Timestamp = true
+	// You can have the signer add timestamp to each token using the
+	// goalone.Timestamp option.
 
-	// You can even set a custom timestamp epoch, if you want. Just give it a
+	// You can set a custom timestamp epoch, if you want. Just give it a
 	// unix timestamp in seconds and go-alone will use it as an offset for all
 	// timestamps. This will allow you to better future proof your tokens or to
 	// just make them more obsecure.
-	o.Epoch = 1293840000
 
-	// Now lets pass these options to our new signer then sign our data
-	s = goalone.New(secret, o)
+	// Here's an example of passing both the Timestamp option and a custom
+	// epoch.
+	s = goalone.New(secret, goalone.Timestamp, goalone.Epoch(1293840000))
 	token = s.Sign(data)
 
 	// Of course you can do this all as a one liner too, but it does start to get
 	// a bit too long :)
-	token = goalone.New(secret, &goalone.Options{Timestamp: true, Epoch: 1293840000}).Sign(data)
+	goalone.New(secret, goalone.Timestamp, goalone.Epoch(1293840000)).Sign(data)
 
 	// You can parse out a token into a struct that separates the payload and
 	// timestamp for you.

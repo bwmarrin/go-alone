@@ -9,7 +9,7 @@ import (
 
 func TestTimeCoding(t *testing.T) {
 
-	New(nil, nil) // needed to init the decodemap
+	New(nil) // needed to init the decodemap
 
 	var now int64
 	for i := 0; i < 41; i++ {
@@ -27,7 +27,7 @@ func TestTimeCoding(t *testing.T) {
 }
 func TestNewNil(t *testing.T) {
 
-	s := New(nil, nil)
+	s := New(nil)
 	if s == nil {
 		t.Fatal("New returned a nil")
 	}
@@ -40,7 +40,7 @@ func TestNewNil(t *testing.T) {
 func TestNewSecret(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLimits`)
-	s := New(secret, nil)
+	s := New(secret)
 	if s == nil {
 		t.Fatal("New returned a nil")
 	}
@@ -57,7 +57,7 @@ func TestNewSecret(t *testing.T) {
 func TestNewSecretTooBig(t *testing.T) {
 
 	secret := []byte(`B1nzyRateLid;flkjasdl;fjasd;lkfjkl;ljasd;fkljsda;fkljasd;klfj;asdjts`)
-	s := New(secret, nil)
+	s := New(secret)
 	if s == nil {
 		t.Fatal("New returned a nil")
 	}
@@ -70,23 +70,6 @@ func TestNewSecretTooBig(t *testing.T) {
 		t.Fatal("New returned a dirty hash")
 	}
 
-}
-
-func TestNewSecretOptions(t *testing.T) {
-
-	secret := []byte(`B1nzyRateLimits`)
-	s := New(secret, &Options{})
-	if s == nil {
-		t.Fatal("New returned a nil")
-	}
-
-	if s.hash == nil {
-		t.Fatal("New returned a Sword with a nil hash")
-	}
-
-	if s.dirty {
-		t.Fatal("New returned a dirty hash")
-	}
 }
 
 func TestUnsignTooLittle(t *testing.T) {
@@ -94,7 +77,7 @@ func TestUnsignTooLittle(t *testing.T) {
 	secret := []byte(`B1nzyRateLimits`)
 	token := []byte("9yhD.QheV.k0W")
 
-	s := New(secret, nil)
+	s := New(secret)
 	got, err := s.Unsign(token)
 
 	if got != nil {
@@ -113,7 +96,7 @@ func TestSign(t *testing.T) {
 	data := []byte(`1203981209381290.LutinRocks`)
 	want := []byte(`1203981209381290.LutinRocks.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 
-	s := New(secret, nil)
+	s := New(secret)
 	token := s.Sign(data)
 
 	if subtle.ConstantTimeCompare(token, want) != 1 {
@@ -145,7 +128,7 @@ func TestSignTimestamp(t *testing.T) {
 	secret := []byte(`B1nzyRateLimits`)
 	data := []byte(`1203981209381290.LutinRocks`)
 
-	s := New(secret, &Options{Timestamp: true})
+	s := New(secret, Timestamp)
 	token := s.Sign(data)
 
 	// Make sure we got the same payload
@@ -168,7 +151,7 @@ func TestUnsign(t *testing.T) {
 	token := []byte(`1203981209381290.LutinRocks.ZGRsRXvTb08ld7xmJImL1ykGr8D1JmrSPGc134nBNRo`)
 	want := []byte(`1203981209381290.LutinRocks`)
 
-	s := New(secret, nil)
+	s := New(secret)
 	got, err := s.Unsign(token)
 	if err != nil {
 		t.Fatal("Unsign returned an err,", err)
@@ -204,7 +187,7 @@ func BenchmarkNew(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		New(secret, nil)
+		New(secret)
 	}
 }
 
@@ -216,12 +199,12 @@ func BenchmarkSignLittle(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		New(secret, nil).Sign(data)
+		New(secret).Sign(data)
 	}
 }
 
 func BenchmarkReuseSignLittle(b *testing.B) {
-	s := New([]byte(`B1nzyRateLimits`), nil)
+	s := New([]byte(`B1nzyRateLimits`))
 	data := []byte(`1203981209381290.LutinRocks`)
 
 	b.ReportAllocs()
@@ -233,7 +216,7 @@ func BenchmarkReuseSignLittle(b *testing.B) {
 }
 
 func BenchmarkReuseSignTimestampLittle(b *testing.B) {
-	s := New([]byte(`B1nzyRateLimits`), &Options{Timestamp: true})
+	s := New([]byte(`B1nzyRateLimits`), Timestamp)
 	data := []byte(`1203981209381290.LutinRocks`)
 
 	b.ReportAllocs()
@@ -252,12 +235,12 @@ func BenchmarkSignBig(b *testing.B) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		New(secret, nil).Sign(data)
+		New(secret).Sign(data)
 	}
 }
 
 func BenchmarkSignBigReuse(b *testing.B) {
-	s := New([]byte(`B1nzyRateLimits`), nil)
+	s := New([]byte(`B1nzyRateLimits`))
 	data := []byte(`1203981209381290.7h90g7h089234g75908347gh09384h7v0897fg08947f5097423058974h908fg702f9j75028fg5704239hg7053498dj7249038jd57j097g5v029dh79hc47f507v9082h7f509234j7dc02d750j24935h7f924`)
 
 	b.ReportAllocs()
@@ -271,19 +254,19 @@ func BenchmarkUnsignLittle(b *testing.B) {
 	secret := []byte(`B1nzyRateLimits`)
 	data := []byte(`1203981209381290.LutinRocks`)
 
-	s := New([]byte(`B1nzyRateLimits`), nil)
+	s := New([]byte(`B1nzyRateLimits`))
 	t := s.Sign(data)
 
 	b.ReportAllocs()
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		New(secret, nil).Unsign(t)
+		New(secret).Unsign(t)
 	}
 }
 
 func BenchmarkUnsignLittleReuse(b *testing.B) {
-	s := New([]byte(`B1nzyRateLimits`), nil)
+	s := New([]byte(`B1nzyRateLimits`))
 	data := []byte(`1203981209381290.LutinRocks`)
 	t := s.Sign(data)
 
@@ -298,19 +281,19 @@ func BenchmarkUnsignLittleReuse(b *testing.B) {
 func BenchmarkUnsignBig(b *testing.B) {
 	secret := []byte(`B1nzyRateLimits`)
 	data := []byte(`1203981209381290.7h90g7h089234g75908347gh09384h7v0897fg08947f5097423058974h908fg702f9j75028fg5704239hg7053498dj7249038jd57j097g5v029dh79hc47f507v9082h7f509234j7dc02d750j24935h7f924`)
-	s := New([]byte(`B1nzyRateLimits`), nil)
+	s := New([]byte(`B1nzyRateLimits`))
 	t := s.Sign(data)
 
 	b.ReportAllocs()
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		New(secret, nil).Unsign(t)
+		New(secret).Unsign(t)
 	}
 }
 
 func BenchmarkUnsignReuseBig(b *testing.B) {
-	s := New([]byte(`B1nzyRateLimits`), nil)
+	s := New([]byte(`B1nzyRateLimits`))
 	data := []byte(`1203981209381290.7h90g7h089234g75908347gh09384h7v0897fg08947f5097423058974h908fg702f9j75028fg5704239hg7053498dj7249038jd57j097g5v029dh79hc47f507v9082h7f509234j7dc02d750j24935h7f924`)
 	t := s.Sign(data)
 

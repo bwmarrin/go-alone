@@ -11,16 +11,6 @@ import (
 	"golang.org/x/crypto/blake2b"
 )
 
-// Options that can be configured and passed to New()
-type Options struct {
-	// Epoch to use for Timestamps, when signing/parsing Tokens
-	// Number of seconds since January 1, 1970 UTC
-	Epoch int64
-
-	// Should the Sign method add a timestamp to tokens?
-	Timestamp bool
-}
-
 // Sword is a magical Wooden Sword to be used for protection, because it's dangerous out
 // there... Also, it is the main struct used to sign and unsign data using this
 // package.
@@ -28,8 +18,8 @@ type Sword struct {
 	sync.Mutex
 	hash      hash.Hash
 	dirty     bool
-	epoch     int64
 	timestamp bool
+	epoch     int64
 }
 
 // ErrInvalidSignature is returned by Unsign when the provided token's
@@ -43,7 +33,8 @@ var ErrShortToken = errors.New("token is too small to be valid")
 // New takes a secret key and returns a new Sword.  If no Options are provided
 // then minimal defaults will be used. NOTE: The key must be 64 bytes or less
 // in size. If a larger key is provided it will be truncated to 64 bytes.
-func New(key []byte, o *Options) *Sword {
+//func New(key []byte, o *Options) *Sword {
+func New(key []byte, options ...func(*Sword)) *Sword {
 
 	var err error
 
@@ -54,9 +45,8 @@ func New(key []byte, o *Options) *Sword {
 
 	s := &Sword{}
 
-	if o != nil {
-		s.epoch = o.Epoch
-		s.timestamp = o.Timestamp
+	for _, opt := range options {
+		opt(s)
 	}
 
 	s.hash, err = blake2b.New256(key)
@@ -71,6 +61,20 @@ func New(key []byte, o *Options) *Sword {
 	}
 
 	return s
+}
+
+// Epoch is a functional option that can be passed to New() to set the Epoch
+// to be used.
+func Epoch(e int64) func(*Sword) {
+	return func(s *Sword) {
+		s.epoch = e
+	}
+}
+
+// Timestamp is a functional option that can be passed to New() to add a
+// timestamp to signatures.
+func Timestamp(s *Sword) {
+	s.timestamp = true
 }
 
 // Sign signs data and returns []byte in the format `data.signature`. Optionally
